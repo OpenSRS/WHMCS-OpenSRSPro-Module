@@ -39,6 +39,7 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
     $pre_script='';
     $script='
         <script type="text/javascript">
+        //<![CDATA[
             jQuery(document).ready(function(){
     ';
     
@@ -58,6 +59,7 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
     }
     $script.="
         });
+        //]]>
         </script>";
     return $pre_script.$script;
     
