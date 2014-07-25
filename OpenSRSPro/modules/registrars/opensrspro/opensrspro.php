@@ -1344,6 +1344,83 @@ function opensrspro_GetContactDetails($params) {
             $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
             $values[$contactValueType]["Phone"] = $contactSet[$contactType]["phone"];
             $values[$contactValueType]["Fax"] = $contactSet[$contactType]["fax"];
+            
+            /* Added by BC : NG : 23-7-2014 : To resolve issue of display all contact details  */ 
+            
+            $contactType = "billing";
+            $contactValueType = "Billing";
+
+//                if (strcmp($contactType, "owner") == 0)
+//                    $contactValueType = "Registrant";
+//                //$contactValueType = "Owner";
+//                else
+//                    $contactValueType = ucfirst($contactType);
+
+            $values[$contactValueType]["First Name"] = $contactSet[$contactType]["first_name"];
+            $values[$contactValueType]["Last Name"] = $contactSet[$contactType]["last_name"];
+            $values[$contactValueType]["Organization Name"] = $contactSet[$contactType]["org_name"];
+            $values[$contactValueType]["Address 1"] = $contactSet[$contactType]["address1"];
+            $values[$contactValueType]["Address 2"] = $contactSet[$contactType]["address2"];
+            $values[$contactValueType]["Address3"] = $contactSet[$contactType]["address3"];
+            $values[$contactValueType]["City"] = $contactSet[$contactType]["city"];
+            $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+            $values[$contactValueType]["Postal Code"] = $contactSet[$contactType]["postal_code"];
+            $values[$contactValueType]["Country"] = $contactSet[$contactType]["country"];
+            $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
+            $values[$contactValueType]["Phone"] = $contactSet[$contactType]["phone"];
+            $values[$contactValueType]["Fax"] = $contactSet[$contactType]["fax"];
+            
+            $contactType = "admin";
+            $contactValueType = "Admin";
+
+//                if (strcmp($contactType, "owner") == 0)
+//                    $contactValueType = "Registrant";
+//                //$contactValueType = "Owner";
+//                else
+//                    $contactValueType = ucfirst($contactType);
+
+            $values[$contactValueType]["First Name"] = $contactSet[$contactType]["first_name"];
+            $values[$contactValueType]["Last Name"] = $contactSet[$contactType]["last_name"];
+            $values[$contactValueType]["Organization Name"] = $contactSet[$contactType]["org_name"];
+            $values[$contactValueType]["Address 1"] = $contactSet[$contactType]["address1"];
+            $values[$contactValueType]["Address 2"] = $contactSet[$contactType]["address2"];
+            $values[$contactValueType]["Address3"] = $contactSet[$contactType]["address3"];
+            $values[$contactValueType]["City"] = $contactSet[$contactType]["city"];
+            $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+            $values[$contactValueType]["Postal Code"] = $contactSet[$contactType]["postal_code"];
+            $values[$contactValueType]["Country"] = $contactSet[$contactType]["country"];
+            $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
+            $values[$contactValueType]["Phone"] = $contactSet[$contactType]["phone"];
+            $values[$contactValueType]["Fax"] = $contactSet[$contactType]["fax"];
+            
+            
+            if (strcmp($lockTech, "on") != 0){
+                $contactType = "tech";
+                $contactValueType = "Tech";
+
+    //                if (strcmp($contactType, "owner") == 0)
+    //                    $contactValueType = "Registrant";
+    //                //$contactValueType = "Owner";
+    //                else
+    //                    $contactValueType = ucfirst($contactType);
+
+                $values[$contactValueType]["First Name"] = $contactSet[$contactType]["first_name"];
+                $values[$contactValueType]["Last Name"] = $contactSet[$contactType]["last_name"];
+                $values[$contactValueType]["Organization Name"] = $contactSet[$contactType]["org_name"];
+                $values[$contactValueType]["Address 1"] = $contactSet[$contactType]["address1"];
+                $values[$contactValueType]["Address 2"] = $contactSet[$contactType]["address2"];
+                $values[$contactValueType]["Address3"] = $contactSet[$contactType]["address3"];
+                $values[$contactValueType]["City"] = $contactSet[$contactType]["city"];
+                $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+                $values[$contactValueType]["Postal Code"] = $contactSet[$contactType]["postal_code"];
+                $values[$contactValueType]["Country"] = $contactSet[$contactType]["country"];
+                $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
+                $values[$contactValueType]["Phone"] = $contactSet[$contactType]["phone"];
+                $values[$contactValueType]["Fax"] = $contactSet[$contactType]["fax"];
+            }
+            
+            /* End : To resolve issue of display all contact details  */ 
+            
         } else {
             $osrsError .= $openSRSHandler->resultFullRaw["response_text"] . "<br />";
             $osrsLogError .= $openSRSHandler->resultFullRaw["response_text"] . "\n";
@@ -1459,6 +1536,97 @@ function opensrspro_SaveContactDetails($params) {
         $callArray[$contactType]["phone"] = $contactSet[$contactValueType]["Phone"];
         $callArray[$contactType]["fax"] = $contactSet[$contactValueType]["Fax"];
         $callArray[$contactType]["lang_pref"] = "EN";
+        
+        /* Added by BC : NG : 23-7-2014 : To resolve issue of save/update all contact details  */ 
+        
+        $contactType = 'billing';
+
+        // edited by Maks Aloksa
+        $contactSet = $params["contactdetails"];
+        $contactValueType = "Billing";
+//            $contactValueType = "";
+//
+//            if (strcmp($contactType, "owner") == 0)
+//                $contactValueType = "Registrant";
+//            else
+//                $contactValueType = ucfirst($contactType);
+
+        $callArray[$contactType]["first_name"] = $contactSet[$contactValueType]["First Name"];
+        $callArray[$contactType]["last_name"] = $contactSet[$contactValueType]["Last Name"];
+        $callArray[$contactType]["org_name"] = $contactSet[$contactValueType]["Organization Name"] ? $contactSet[$contactValueType]["Organization Name"] : $contactSet[$contactValueType]["Organisation Name"];
+        $callArray[$contactType]["address1"] = $contactSet[$contactValueType]["Address 1"];
+        $callArray[$contactType]["address2"] = $contactSet[$contactValueType]["Address 2"];
+        $callArray[$contactType]["address3"] = $contactSet[$contactValueType]["Address3"];
+        $callArray[$contactType]["city"] = $contactSet[$contactValueType]["City"];
+        $callArray[$contactType]["state"] = $contactSet[$contactValueType]["State"];
+        $callArray[$contactType]["postal_code"] = $contactSet[$contactValueType]["Postal Code"] ? $contactSet[$contactValueType]["Postal Code"] : $contactSet[$contactValueType]["Postcode"];
+        $callArray[$contactType]["country"] = $contactSet[$contactValueType]["Country"];
+        $callArray[$contactType]["email"] = $contactSet[$contactValueType]["Email"];
+        $callArray[$contactType]["phone"] = $contactSet[$contactValueType]["Phone"];
+        $callArray[$contactType]["fax"] = $contactSet[$contactValueType]["Fax"];
+        $callArray[$contactType]["lang_pref"] = "EN";
+        
+        
+        $contactType = 'admin';
+
+        // edited by Maks Aloksa
+        $contactSet = $params["contactdetails"];
+        $contactValueType = "Admin";
+//            $contactValueType = "";
+//
+//            if (strcmp($contactType, "owner") == 0)
+//                $contactValueType = "Registrant";
+//            else
+//                $contactValueType = ucfirst($contactType);
+
+        $callArray[$contactType]["first_name"] = $contactSet[$contactValueType]["First Name"];
+        $callArray[$contactType]["last_name"] = $contactSet[$contactValueType]["Last Name"];
+        $callArray[$contactType]["org_name"] = $contactSet[$contactValueType]["Organization Name"] ? $contactSet[$contactValueType]["Organization Name"] : $contactSet[$contactValueType]["Organisation Name"];
+        $callArray[$contactType]["address1"] = $contactSet[$contactValueType]["Address 1"];
+        $callArray[$contactType]["address2"] = $contactSet[$contactValueType]["Address 2"];
+        $callArray[$contactType]["address3"] = $contactSet[$contactValueType]["Address3"];
+        $callArray[$contactType]["city"] = $contactSet[$contactValueType]["City"];
+        $callArray[$contactType]["state"] = $contactSet[$contactValueType]["State"];
+        $callArray[$contactType]["postal_code"] = $contactSet[$contactValueType]["Postal Code"] ? $contactSet[$contactValueType]["Postal Code"] : $contactSet[$contactValueType]["Postcode"];
+        $callArray[$contactType]["country"] = $contactSet[$contactValueType]["Country"];
+        $callArray[$contactType]["email"] = $contactSet[$contactValueType]["Email"];
+        $callArray[$contactType]["phone"] = $contactSet[$contactValueType]["Phone"];
+        $callArray[$contactType]["fax"] = $contactSet[$contactValueType]["Fax"];
+        $callArray[$contactType]["lang_pref"] = "EN";
+        
+        
+        if (strcmp($lockTech, "on") != 0){
+        $contactType = 'tech';
+
+        // edited by Maks Aloksa
+        $contactSet = $params["contactdetails"];
+        $contactValueType = "Tech";
+//            $contactValueType = "";
+//
+//            if (strcmp($contactType, "owner") == 0)
+//                $contactValueType = "Registrant";
+//            else
+//                $contactValueType = ucfirst($contactType);
+
+        $callArray[$contactType]["first_name"] = $contactSet[$contactValueType]["First Name"];
+        $callArray[$contactType]["last_name"] = $contactSet[$contactValueType]["Last Name"];
+        $callArray[$contactType]["org_name"] = $contactSet[$contactValueType]["Organization Name"] ? $contactSet[$contactValueType]["Organization Name"] : $contactSet[$contactValueType]["Organisation Name"];
+        $callArray[$contactType]["address1"] = $contactSet[$contactValueType]["Address 1"];
+        $callArray[$contactType]["address2"] = $contactSet[$contactValueType]["Address 2"];
+        $callArray[$contactType]["address3"] = $contactSet[$contactValueType]["Address3"];
+        $callArray[$contactType]["city"] = $contactSet[$contactValueType]["City"];
+        $callArray[$contactType]["state"] = $contactSet[$contactValueType]["State"];
+        $callArray[$contactType]["postal_code"] = $contactSet[$contactValueType]["Postal Code"] ? $contactSet[$contactValueType]["Postal Code"] : $contactSet[$contactValueType]["Postcode"];
+        $callArray[$contactType]["country"] = $contactSet[$contactValueType]["Country"];
+        $callArray[$contactType]["email"] = $contactSet[$contactValueType]["Email"];
+        $callArray[$contactType]["phone"] = $contactSet[$contactValueType]["Phone"];
+        $callArray[$contactType]["fax"] = $contactSet[$contactValueType]["Fax"];
+        $callArray[$contactType]["lang_pref"] = "EN";
+        
+        }
+        
+        /* End : To resolve issue of save/update all contact details */
+        
         //die('<pre>'.  print_r($callArray, true).'</pre>');
         set_error_handler("osrsError", E_USER_WARNING);
 
