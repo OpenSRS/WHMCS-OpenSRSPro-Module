@@ -33,6 +33,9 @@ function opensrspro_getConfigArray() {
         //"CookieBypass"          => array( "Type" => "yesno", "Description" => "Reseller account is set up to operate without cookie authentication.",),
         "GeneralError"            => array("Type" => "text", "Size" => "50", "Description" => "A general error to be displayed to the end user.",),
         "DisableTemplatesChanges" => array("Type" => "yesno", "Description" => "Check to disable changes in client area templates"),
+        /* Added by BC : NG : 9-7-2014 : To set role perimission for hide Registrant Verification Status */  
+        "RestrictedAdminIds"      => array("Type" => "text", "Size" => "100", "Description" => "Admin ID who has allowed to see 'Registrant Verification Status'",),
+        /* End : To set role perimission for hide Registrant Verification Status */
     );
 
     return $configarray;
@@ -2530,6 +2533,17 @@ function filterForResellerError($error, $generalError) {
     return $newError;
 }
 
+/* Added by BC : NG : 9-7-2014 : To get config data */   
+function getConfigurationParamsData()
+{
+    $result = mysql_query("SELECT setting,value FROM tblregistrars WHERE registrar='opensrspro'");
+    while($row = mysql_fetch_assoc($result)){
+        $params[$row['setting']] = decrypt($row['value']);
+    } 
+    return $params;
+}
+/* End : To get config data */
+
 //This function is used to temporarily unlock domains in order to make changes.
 
 function opensrspro_TempUnlock($params, $tempunlock) {
@@ -2638,6 +2652,19 @@ function opensrspro_AdminDomainsTabFields($params){
 
     if($domain_details['status'] != 'Active')
         return;
+        
+    /* Added by BC : NG : 9-7-2014 : To set role perimission for hide Registrant Verification Status */
+    $command = 'getadmindetails';
+    $adminuser = '';
+    $values = '';
+        
+    $results = localAPI($command,$values,$adminuser);
+    
+    $params = array_merge($params,getConfigurationParamsData());
+    $adminIds = explode(',',$params['RestrictedAdminIds']);                                         
+     
+    if($results['result'] == 'success' and in_array($results['adminid'],$adminIds)) {return;}    
+    /* End : To set role perimission for hide Registrant Verification Status */
     
     global $osrsError;
     global $registrant_verification_status;
@@ -2692,6 +2719,19 @@ function opensrspro_AdminCustomButtonArray($params) {
 
     if($domain_details['status'] != 'Active')
         return;
+        
+    /* Added by BC : NG : 9-7-2014 : To set role perimission for hide Registrant Verification Status */
+    $command = 'getadmindetails';
+    $adminuser = '';
+    $values = '';
+     
+    $results = localAPI($command,$values,$adminuser);
+    
+    $params = array_merge($params,getConfigurationParamsData());
+    $adminIds = explode(',',$params['RestrictedAdminIds']); 
+     
+    if($results['result'] == 'success' and in_array($results['adminid'],$adminIds)) {return;}
+    /* End : To set role perimission for hide Registrant Verification Status */
     
     global $registrant_verification_status;
     
@@ -2719,11 +2759,17 @@ function opensrspro_resendVerificationEmail($params){
 
     $domain = $params['sld'].'.'.$params['tld'];
     
-    $result = mysql_query("SELECT setting,value FROM tblregistrars WHERE registrar='opensrspro'");
+   /* Changed by BC : NG : 9-7-2014 : For get comfig data */ 
+    
+    /*$result = mysql_query("SELECT setting,value FROM tblregistrars WHERE registrar='opensrspro'");
     while($row = mysql_fetch_assoc($result)){
         $params[$row['setting']] = decrypt($row['value']);
-    }
-
+    } */
+    
+    $params = array_merge($params,getConfigurationParamsData());   
+    
+    /* End : For get comfig data */
+    
     $callArray = array(
         'func' => 'sendRegistrantVerificationEmail',
         'data' => array(
@@ -2764,10 +2810,16 @@ function opensrspro_getRegistrantVerificationStatus($params){
 
     $domain = $params['sld'].'.'.$params['tld'];
     
-    $result = mysql_query("SELECT setting,value FROM tblregistrars WHERE registrar='opensrspro'");
+    /* Changed by BC : NG : 9-7-2014 : For get comfig data */ 
+    
+    /*$result = mysql_query("SELECT setting,value FROM tblregistrars WHERE registrar='opensrspro'");
     while($row = mysql_fetch_assoc($result)){
         $params[$row['setting']] = decrypt($row['value']);
-    }
+    } */
+    
+    $params = array_merge($params,getConfigurationParamsData());   
+    
+    /* End : For get comfig data */
 
     $callArray = array(
         'func' => 'lookupGetRegistrantVerificationStatus',
