@@ -1725,6 +1725,10 @@ function opensrspro_Sync($params) {
         $sync = true;
         $syncdata = $data;
     }
+    
+    /* Added by BC : RA : 5-7-2014 : To set request string at logModuleCall */
+    $callArray = array('Domain' => $params['domain'], 'Last Check' => $last_check, 'Previous Data' => $syncdata);
+    /* End : To set request string at logModuleCall */
 
     if ($outdated) {
         // save all lookup data to database
@@ -1757,9 +1761,17 @@ function opensrspro_Sync($params) {
             $values['active'] = true;
         }
         $values['expirydate'] = date("Y-m-d", strtotime($syncdata['expiredate']));
+        
+        /* Added by BC : NG : 27-6-2014 : For add log in opensrspro_Sync function */
+        opensrspro_logModuleCall(__FUNCTION__, $callArray, $syncdata, $values, "");
+        /* End : For add log in opensrspro_Sync function */
 
         return $values;
     }
+    /* Added by BC : RA : 5-7-2014 : To set request string at logModuleCall */ 
+    $values = array('error' => 'Sync not run');
+    opensrspro_logModuleCall(__FUNCTION__, $callArray, $syncdata, $values, "");
+    /* End : To set request string at logModuleCall */
 
 // previous version - single sync
     /*
@@ -1982,6 +1994,9 @@ function opensrspro_getDomainsByExpiry($params, $from = '1970-01-01', $to = '203
 
 // Generates the User name based on domain name
 function getDomainUser($tld, $sld) {
+    /* Added by BC : RA : 5-7-2014 : To set request string at logModuleCall */
+    $callArray = array('tld' => $tld, 'sld' => $sld);
+    /* End : To set request string at logModuleCall */
     $domainUser = $sld . $tld;
     $domainUser = str_replace("-", "", $domainUser);
     $domainUser = str_replace(".", "", $domainUser);
@@ -1989,6 +2004,10 @@ function getDomainUser($tld, $sld) {
     if (strlen($domainUser) > 20) {
         $domainUser = substr($domainUser, 0, 19);
     }
+    
+    /* Added by BC : NG : 27-6-2014 : For add log in getDomainUser function */ 
+    opensrspro_logModuleCall(__FUNCTION__, $callArray, $domainUser, $domainUser, "");
+    /* End : For add log in getDomainUser function */
 
     return $domainUser;
 }
@@ -1996,8 +2015,15 @@ function getDomainUser($tld, $sld) {
 // Generates a secure password beased on the domain name and a admin
 // provided hash key.
 function getDomainPass($tld, $sld, $hashKey) {
+    /* Added by BC : RA : 5-7-2014 : To set request string at logModuleCall */
+    $callArray = array('tld' => $tld, 'sld' => $sld, 'hashKey' => $hashKey);
+    /* End : To set request string at logModuleCall */
     $domainPass = sha1(sha1($tld . $sld . $hashKey) . $hashKey);
     $domainPass = substr($domainPass, 0, 19);
+    
+     /* Added by BC : NG : 27-6-2014 : For add log in getDomainPass function */ 
+    opensrspro_logModuleCall(__FUNCTION__, $callArray, $domainPass, $domainPass, "");
+    /* End : For add log in getDomainPass function */
 
     return $domainPass;
 }
@@ -2097,6 +2123,10 @@ function generateConnectData($params) {
     $connectData["osrs_protocol"] = "XCP";
     $connectData["osrs_baseClassVersion"] = "2.8.0";
     $connectData["osrs_version"] = "XML:0.1";
+    
+     /* Added by BC : NG : 27-6-2014 : For add log in generateConnectData function */  
+    opensrspro_logModuleCall(__FUNCTION__, $params, $connectData, $connectData, $params);
+    /* End : For add log in generateConnectData function */
 
     return $connectData;
 }
@@ -2106,16 +2136,30 @@ function osrsError($errno, $errstr, $errfile, $errline) {
 
     global $osrsError;
     global $osrsLogError;
+    
+    /* Added by BC : RA : 5-7-2014 : To set request string at logModuleCall */
+    $callArray = array('Error No.' => $errno, 'Error String' => $errstr, 'Error File' => $errfile, 'Error Line' => $errline);
+    /* End : To set request string at logModuleCall */
+
 
     // Error to be logged, includes file and error line.
     $osrsLogError .=$errstr . " " . " File: " . $errfile . " Line: " . $errline;
 
     // Error to be displayed to end user, only the error string itself.
     $osrsError.= $errstr . "<br />";
+    
+    /* Added by BC : RA : 5-7-2014 : To set request string at logModuleCall */ 
+    $responseArray = array('osrsLogError' => $osrsLogError, 'osrsError' => $osrsError);
+    opensrspro_logModuleCall(__FUNCTION__, $callArray, $responseArray, $responseArray, '');
+    /* End : To set request string at logModuleCall */
 }
 
 // Checks call array for specific CCTLD requirements
 function addCCTLDFields($params, $callArray) {
+    
+    /* Added by BC : RA : 5-7-2014 : To set request string at logModuleCall */
+    $call = array('Params' => $params, 'Call Array' => $callArray);
+    /* End : To set request string at logModuleCall */
 
     $tld = $params["tld"];
 
@@ -2424,6 +2468,10 @@ function addCCTLDFields($params, $callArray) {
         else
             $callArray["data"]["isa_trademark"] = "1";
     }
+    
+    /* Added by BC : NG : 27-6-2014 : For add log in addCCTLDFields function */
+    opensrspro_logModuleCall(__FUNCTION__, $call, $callArray, $callArray, $params);
+    /* End : For add log in addCCTLDFields function */
 
     return $callArray;
 }
@@ -2460,6 +2508,10 @@ function getDomainCredentials($domain, $params) {
 // Checks to make sure the word reseller is not in an error message.  If it is,
 // it will replace it with the general error.
 function filterForResellerError($error, $generalError) {
+    
+     /* Added by BC : RA : 5-7-2014 : To set request string at logModuleCall */
+    $callArray = array('error' => $error, 'generalError' => $generalError);
+    /* End : To set request string at logModuleCall */
 
     $newError = "";
 
@@ -2467,6 +2519,13 @@ function filterForResellerError($error, $generalError) {
         $newError = $error;
     else
         $newError = $generalError;
+        
+     /* Added by BC : NG : 27-6-2014 : For add log in filterForResellerError function */   
+    if($error != "" && $generalError != "")
+    {
+        opensrspro_logModuleCall(__FUNCTION__, $callArray, $newError, $newError, '');
+    }
+    /* End : For add log in filterForResellerError function */
 
     return $newError;
 }
