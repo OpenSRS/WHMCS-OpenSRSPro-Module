@@ -308,11 +308,13 @@ class provModify extends openSRS_base {
 			'protocol' => 'XCP',
 			'action' => 'modify',
 			'object' => 'DOMAIN',
-			'cookie' => $this->_dataObject->data->cookie,
-			'attributes' => array (
-				'affect_domains' => $this->_dataObject->data->affect_domains,
-				'data' => $this->_dataObject->data->data
-			)
+			/* Commented by BC : RA : 24-6-2014 : To set same XML call as lookupGetDomain */
+            /* 'cookie' => $this->_dataObject->data->cookie, */
+            /* End : To set same XML call as lookupGetDomain */
+            'attributes' => array (
+                'affect_domains' => $this->_dataObject->data->affect_domains,
+                'data' => $this->_dataObject->data->data
+            )
 		);
 		
 		if (isSet($this->_dataObject->data->cookie) && $this->_dataObject->data->cookie != "") $cmd['cookie'] = $this->_dataObject->data->cookie;
