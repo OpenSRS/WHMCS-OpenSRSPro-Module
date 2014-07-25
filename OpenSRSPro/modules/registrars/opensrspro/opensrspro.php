@@ -764,7 +764,96 @@ function opensrspro_SaveDNS($params) {
     }
     restore_error_handler();
 
-    if (!empty($fwd_subdomains)) {
+    /* Added if..else by BC : NG : 21-7-2014 : To delete domain forwarding */
+    /*if (!empty($fwd_subdomains)) {
+        // Create the forwarding service for this domain name.  A cookie is
+        // required, no bypass, for this function.  Using getDomainCredentials
+        // to grab the username and password if bypass is on.
+        $createArray = array(
+            'func' => 'fwdCreate',
+            'data' => array(
+                'domain' => $sld . "." . $tld
+            ),
+            'connect' => generateConnectData($params)
+        );
+        /*
+          if(strcmp($params['CookieBypass'],"on")==0){
+          $domainCredentials = getDomainCredentials($sld . "." . $tld, $params);
+          $domainUser = $domainCredentials['username'];
+          $domainPass = $domainCredentials['password'];
+          } else {
+          $domainUser = getDomainUser($tld, $sld);
+          $domainPass = getDomainPass($tld, $sld, $hashKey);
+          }
+         * /
+        $cookieBypass = true;
+
+        // Generate cookie using the standard username and password, if
+        // cookie bypass is on, cookie is set to false.  Errors will be fed
+        // into error variables from the getCookie function.
+        if (!$cookieBypass) {
+            $domainUser = getDomainUser($tld, $sld);
+            $domainPass = getDomainPass($tld, $sld, $hashKey);
+            $cookie = getCookie($sld . "." . $tld, $domainUser, $domainPass, $params);
+        }
+        else
+            $cookie = false;
+
+        // Checks to see if there was an error grabbing the cookie or if bypass
+        // is on
+        if ($cookie !== false || $cookieBypass) {
+            set_error_handler("osrsError", E_USER_WARNING);
+            $createHandler = processOpenSRS("array", $createArray);
+            if (strcmp($createHandler->resultFullRaw["is_success"], "1") != 0 && strcmp($createHandler->resultFullRaw["response_code"], "485") != 0) {
+                $osrsError .= $createHandler->resultFullRaw["response_text"] . "<br />";
+                $osrsLogError .= $createHandler->resultFullRaw["response_text"] . "\n";
+            }
+
+            // Once the create function is called the forwarding set function is
+            // called to set the URL forwards.
+            $callArray = array(
+                'func' => 'fwdSet',
+                'data' => array(
+                    'domain' => $sld . "." . $tld,
+                    'subdomain' => $fwd_subdomains,
+                    'destination_urls' => $fwd_addresses,
+                    'maskeds' => $fwd_maskeds,
+                    'cookie' => $cookie,
+                    'bypass' => $cookieBypass,
+                ),
+                'connect' => generateConnectData($params)
+            );
+
+
+            $openSRSHandler = processOpenSRS("array", $callArray);
+
+            // restore the error handler once all of the OSRS calls have been made
+            restore_error_handler();
+
+            if (strcmp($openSRSHandler->resultFullRaw["is_success"], "1") != 0) {
+                $osrsError .= $openSRSHandler->resultFullRaw["response_text"] . "<br />";
+                $osrsLogError .= $openSRSHandler->resultFullRaw["response_text"] . "\n";
+            }
+        }
+    }*/
+    if (empty($fwd_subdomains)) {
+        set_error_handler("osrsError", E_USER_WARNING);
+        $callArray = array(
+                'func' => 'fwdDelete',
+                'data' => array(
+                    'domain' => $sld . "." . $tld,
+                ),
+                'connect' => generateConnectData($params)
+            );
+            $openSRSHandler = processOpenSRS("array", $callArray);
+            restore_error_handler();
+
+            if (strcmp($openSRSHandler->resultFullRaw["is_success"], "1") != 0) {
+                $osrsError .= $openSRSHandler->resultFullRaw["response_text"] . "<br />";
+                $osrsLogError .= $openSRSHandler->resultFullRaw["response_text"] . "\n";
+            }
+    }
+    else{
         // Create the forwarding service for this domain name.  A cookie is
         // required, no bypass, for this function.  Using getDomainCredentials
         // to grab the username and password if bypass is on.
@@ -835,6 +924,7 @@ function opensrspro_SaveDNS($params) {
             }
         }
     }
+    /* End : To delete domain forwarding */
 
     if (!empty($osrsLogError)) {
         if (empty($osrsError))
