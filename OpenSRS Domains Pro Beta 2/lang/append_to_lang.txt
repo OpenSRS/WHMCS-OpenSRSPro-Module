@@ -1,0 +1,16 @@
+# These are some of the additional variables used by Opensrs PRO Module.
+# You can add them to the bottom of any language file you would like to use.
+# Just translate the right side of the equal sign within the quotes.
+
+$_LANG["domainswhois"] = "Whois Privacy";
+$_LANG["domainswhoisdisable"] = "Disable Whois Privacy";
+$_LANG["domainswhoisdisabled"] = "Disabled";
+$_LANG["domainswhoisenable"] = "Enable Whois Privacy";
+$_LANG["domainswhoisenabled"] = "Enabled";
+$_LANG["domainswhoisstatus"] = "Current Status";
+$_LANG["domainswhoisadd"] = "Buy Whois Privacy feature";
+$_LANG["domainswhoisaddconfirm"] = "Are you sure want to buy the Whois Privacy feature? You will be billed for this.";
+$_LANG["domainswhoiscancel"] = "Remove Whois Privacy feature";
+$_LANG["domainswhoiscancelconfirm"] = "Are you sure want to completely remove the Whois Privacy feature?";
+$_LANG["domainswhoispendingbilling"] = "Pending Billing";
+$_LANG['twofasetup'] = "Two-Factor Authentication Setup Process";

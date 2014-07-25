@@ -1,0 +1,32 @@
+
+
+/*************** START .EU *******************/
+$additionaldomainfields[".eu"][] = array(
+ "Name" => "Language",
+ "Type" => "dropdown",
+ "Options" => "cs,da,de,el,en,es,et,fi,fr,hu,it,lt,lv,mt,nl,pl,pt,sk,sl,sv,ro,bg,ga",
+ "Default" => "en",
+ "Required" => true,
+ );
+/*************** END .EU *******************/
+
+/*************** START .BE *******************/
+ $additionaldomainfields[".be"][] = array(
+ "Name" => "Language",
+ "Type" => "dropdown",
+ "Options" => "en,fr,nl",
+ "Default" => "en",
+ "Required" => true,
+ );
+/*************** END .BE *******************/
+
+/*************** START .COM.BR *******************/
+ $additionaldomainfields[".com.br"][] = array(
+ "Name" => "CPF/CNPJ number", 
+ "Type" => "text", 
+ "Size" => "18", 
+ "Description" => "<br /> CPF Format (11 digits) : NNN.NNN.NNN-NN <br /> CNPJ Format (14 digits) : NN.NNN.NNN/NNNN-NN",
+ "Default" => "", 
+ "Required" => true,
+ );
+/*************** END .COM.BR *******************/
