@@ -558,7 +558,7 @@ function opensrspro_GetDNS($params) {
             // like with DNS.
             $fwds = $openSRSHandler->resultFullRaw["attributes"]["forwarding"];
             
-            /* Added by BC : NG : 9-7-2014 : To resolve error "Domain forwarding not found for domain" */  
+            /* Added by BC : NG : 9-8-2014 : To resolve error "Domain forwarding not found for domain" */  
             $_SESSION['doamin_fwd'] = $fwds;
             /* End : To resolve error "Domain forwarding not found for domain" */
 
@@ -578,7 +578,7 @@ function opensrspro_GetDNS($params) {
                 }
             }
         } else {
-            /* Added by BC : NG : 9-7-2014 : To resolve error "Domain forwarding not found for domain" */  
+            /* Added by BC : NG : 9-8-2014 : To resolve error "Domain forwarding not found for domain" */  
             $_SESSION['doamin_fwd'] = "";
             /* End : To resolve error "Domain forwarding not found for domain" */  
             $osrsError .= $openSRSHandler->resultFullRaw["response_text"] . "<br />";
@@ -845,7 +845,7 @@ function opensrspro_SaveDNS($params) {
     }*/
     
     if (empty($fwd_subdomains)) {
-        /* Changed by BC : NG : 9-7-2014 : To resolve error "Domain forwarding not found for domain" */
+        /* Changed by BC : NG : 9-8-2014 : To resolve error "Domain forwarding not found for domain" */
         /*set_error_handler("osrsError", E_USER_WARNING);
         $callArray = array(
                 'func' => 'fwdDelete',
