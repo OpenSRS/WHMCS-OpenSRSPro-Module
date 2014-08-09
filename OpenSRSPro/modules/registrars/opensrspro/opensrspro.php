@@ -557,6 +557,10 @@ function opensrspro_GetDNS($params) {
             // Pull forwarding records in WHMCS format: hostname type address
             // like with DNS.
             $fwds = $openSRSHandler->resultFullRaw["attributes"]["forwarding"];
+            
+            /* Added by BC : NG : 9-8-2014 : To resolve error "Domain forwarding not found for domain" */  
+            $_SESSION['doamin_fwd'] = $fwds;
+            /* End : To resolve error "Domain forwarding not found for domain" */
 
             foreach ($fwds as $fwd) {
                 if (strcmp($fwd["masked"], "1") == 0) {
@@ -574,6 +578,9 @@ function opensrspro_GetDNS($params) {
                 }
             }
         } else {
+            /* Added by BC : NG : 9-8-2014 : To resolve error "Domain forwarding not found for domain" */  
+            $_SESSION['doamin_fwd'] = "";
+            /* End : To resolve error "Domain forwarding not found for domain" */  
             $osrsError .= $openSRSHandler->resultFullRaw["response_text"] . "<br />";
             $osrsLogError .= $osrsError .= $openSRSHandler->resultFullRaw["response_text"] . "\n";
         }
@@ -836,8 +843,10 @@ function opensrspro_SaveDNS($params) {
             }
         }
     }*/
+    
     if (empty($fwd_subdomains)) {
-        set_error_handler("osrsError", E_USER_WARNING);
+        /* Changed by BC : NG : 9-8-2014 : To resolve error "Domain forwarding not found for domain" */
+        /*set_error_handler("osrsError", E_USER_WARNING);
         $callArray = array(
                 'func' => 'fwdDelete',
                 'data' => array(
@@ -851,7 +860,26 @@ function opensrspro_SaveDNS($params) {
             if (strcmp($openSRSHandler->resultFullRaw["is_success"], "1") != 0) {
                 $osrsError .= $openSRSHandler->resultFullRaw["response_text"] . "<br />";
                 $osrsLogError .= $openSRSHandler->resultFullRaw["response_text"] . "\n";
-            }
+            }*/
+          
+        if(!empty($_SESSION['doamin_fwd'])){
+            set_error_handler("osrsError", E_USER_WARNING);
+            $callArray = array(
+                    'func' => 'fwdDelete',
+                    'data' => array(
+                        'domain' => $sld . "." . $tld,
+                    ),
+                    'connect' => generateConnectData($params)
+                );
+                $openSRSHandler = processOpenSRS("array", $callArray);
+                restore_error_handler();
+
+                if (strcmp($openSRSHandler->resultFullRaw["is_success"], "1") != 0) {
+                    $osrsError .= $openSRSHandler->resultFullRaw["response_text"] . "<br />";
+                    $osrsLogError .= $openSRSHandler->resultFullRaw["response_text"] . "\n";
+                }
+        }
+        /* End : To resolve error "Domain forwarding not found for domain" */  
     }
     else{
         // Create the forwarding service for this domain name.  A cookie is
