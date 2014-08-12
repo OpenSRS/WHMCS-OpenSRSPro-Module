@@ -43,11 +43,13 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
             jQuery(document).ready(function(){
     ';
     
-    if(($vars['filename']=='clientarea' || $vars['filename']=='register' || $vars['filename']=='cart') && opensrspro_getSetting('DisableTemplatesChanges')!='on'){
+    if(($vars['filename']=='clientarea' || $vars['filename']=='register' || $vars['filename']=='cart' || $vars['filename']=='clientsdomaincontacts' || $vars['filename']=='clientscontacts' || $vars['filename']=='clientsprofile') && opensrspro_getSetting('DisableTemplatesChanges')!='on'){
         
-        $pre_script.='
+        /*$pre_script.='
             <script type="text/javascript" src="includes/jscript/validate.js"></script>
-        ';
+        ';*/
+        
+        /* Added by BC : NG : 9-8-2014 : To Add validations for phone and email to contact forms  */ 
         $script.='
             jQuery("input[name=\'phonenumber\']").keyup(function(){
                 if(!this.value.match(/^([0-9]{1,3})\.[0-9]+x?[0-9]*$/))
@@ -67,7 +69,24 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
             })
         ';
         
-        /* Added by BC : NG : 9-8-2014 : To Add validations for phone and email to contact forms  */ 
+        $script.='
+            jQuery("input[name=\'email\']").keyup(function(){
+                if(!this.value.match(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/))
+                {
+                    if(!jQuery("#msgemail").length)
+                    {
+                        jQuery("input[name=\'email\']").after("<div id=\'msgemail\'></div>");
+                    }
+                    jQuery("#msgemail").html("<span style=\'color:#DF0101\'>Invalid Email Format (ex. johndoe@domain.com)</span>");
+                     jQuery(".btn-primary").prop("disabled", true);
+                }
+                else
+                {
+                    jQuery("#msgemail").html("");
+                    jQuery(".btn-primary").prop("disabled", false);
+                }
+            })
+        '; 
         
         $script.='
             var phoneArray = ["contactdetails[Registrant][Phone]","contactdetails[Billing][Phone]","contactdetails[Admin][Phone]","contactdetails[Tech][Phone]"];
@@ -86,11 +105,46 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
                                 }
                                 jQuery("#msg"+divId).html("<span style=\'color:#DF0101\'>Invalid Phone Number Format (ex. 1.4163334444)</span>");
                                 jQuery(".btn-primary").prop("disabled", true);
+                                jQuery("input[value=\'Save Changes\']").prop("disabled", true);
                             }
                             else
                             {
                                 jQuery("#msg"+divId).html("");
                                 jQuery(".btn-primary").prop("disabled", false);
+                                jQuery("input[value=\'Save Changes\']").prop("disabled", false);
+                            }
+                      })
+                     
+                  }
+                
+            });
+            
+        ';
+        
+        $script.='
+            var emailArray = ["contactdetails[Registrant][Email]","contactdetails[Billing][Email]","contactdetails[Admin][Email]","contactdetails[Tech][Email]"];
+            jQuery("input[name^=\'contactdetails\']").each(function(e){    
+                  if(jQuery.inArray(this.name,emailArray) >= 0)
+                  {
+                      var emailVal = "";
+                      jQuery("input[name=\'"+this.name+"\']").keyup(function(){
+                            var divIdEmail = this.name.replace("contactdetails[","").replace("]","").replace("[","").replace("]","");
+                            var emailVal = this.value;
+                            if(!emailVal.match(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/))
+                            {
+                                if(!jQuery("#msg"+divIdEmail).length)
+                                {
+                                    jQuery("input[name=\'"+this.name+"\']").after("<div id=\'msg"+divIdEmail+"\'></div>");
+                                }
+                                jQuery("#msg"+divIdEmail).html("<span style=\'color:#DF0101\'>Invalid Email Format (ex. johndoe@domain.com)</span>");
+                                jQuery(".btn-primary").prop("disabled", true);
+                                jQuery("input[value=\'Save Changes\']").prop("disabled", true);
+                            }
+                            else
+                            {
+                                jQuery("#msg"+divIdEmail).html("");
+                                jQuery(".btn-primary").prop("disabled", false);
+                                jQuery("input[value=\'Save Changes\']").prop("disabled", false);
                             }
                       })
                      
@@ -111,7 +165,9 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
 }
 
 add_hook('ClientAreaHeadOutput',1,'hook_opensrspro_ActivateTemplatesChangesHeadOutput');
-
+/* Added by BC : NG : 11-8-2014 : To Add hook in WHMCS admin  */ 
+add_hook('AdminAreaHeadOutput',1,'hook_opensrspro_ActivateTemplatesChangesHeadOutput');
+/* End : To Add hook in WHMCS admin  */ 
 
 
 ?>
