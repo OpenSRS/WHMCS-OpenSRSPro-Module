@@ -43,7 +43,7 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
             jQuery(document).ready(function(){
     ';
     
-    if(($vars['filename']=='clientarea' || $vars['filename']=='register' || $vars['filename']=='cart' || $vars['filename']=='clientsdomaincontacts' || $vars['filename']=='clientscontacts' || $vars['filename']=='clientsprofile') && opensrspro_getSetting('DisableTemplatesChanges')!='on'){
+    if(($vars['filename']=='clientarea' || $vars['filename']=='register' || $vars['filename']=='cart' || $vars['filename']=='clientsdomaincontacts' || $vars['filename']=='clientscontacts' || $vars['filename']=='clientsprofile' || $vars['filename']=='clientsadd') && opensrspro_getSetting('DisableTemplatesChanges')!='on'){
         
         /*$pre_script.='
             <script type="text/javascript" src="includes/jscript/validate.js"></script>
@@ -51,14 +51,14 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
         
         /* Added by BC : NG : 9-8-2014 : To Add validations for phone and email to contact forms  */ 
         $script.='
-            jQuery("input[name=\'phonenumber\']").keyup(function(){
-                if(!this.value.match(/^([0-9]{1,3})\.[0-9]+x?[0-9]*$/))
+            jQuery("input[name=\'phonenumber\']").blur(function(){
+                if(!this.value.match(/^(\+?[0-9]{1,3})\.[0-9]+x?[0-9]*$/))
                 {
                     if(!jQuery("#msg").length)
                     {
                         jQuery("input[name=\'phonenumber\']").after("<div id=\'msg\'></div>");
                     }
-                    jQuery("#msg").html("<span style=\'color:#DF0101\'>Invalid Phone Number Format (ex. 1.4163334444)</span>");
+                    jQuery("#msg").html("<span style=\'color:#DF0101\'>Invalid Phone Number Format (ex. +1.4163334444 or 1.4163334444)</span>");
                      jQuery(".btn-primary").prop("disabled", true);
                 }
                 else
@@ -70,7 +70,7 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
         ';
         
         $script.='
-            jQuery("input[name=\'email\']").keyup(function(){
+            jQuery("input[name=\'email\']").blur(function(){
                 if(!this.value.match(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/))
                 {
                     if(!jQuery("#msgemail").length)
@@ -94,16 +94,16 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
                   if(jQuery.inArray(this.name,phoneArray) >= 0)
                   {
                       var phoneVal = "";
-                      jQuery("input[name=\'"+this.name+"\']").keyup(function(){
+                      jQuery("input[name=\'"+this.name+"\']").blur(function(){
                             var divId = this.name.replace("contactdetails[","").replace("][Phone]","");
                             var phoneVal = this.value;
-                            if(!phoneVal.match(/^([0-9]{1,3})\.[0-9]+x?[0-9]*$/))
+                            if(!phoneVal.match(/^(\+?[0-9]{1,3})\.[0-9]+x?[0-9]*$/))
                             {
                                 if(!jQuery("#msg"+divId).length)
                                 {
                                     jQuery("input[name=\'"+this.name+"\']").after("<div id=\'msg"+divId+"\'></div>");
                                 }
-                                jQuery("#msg"+divId).html("<span style=\'color:#DF0101\'>Invalid Phone Number Format (ex. 1.4163334444)</span>");
+                                jQuery("#msg"+divId).html("<span style=\'color:#DF0101\'>Invalid Phone Number Format (ex. +1.4163334444 or 1.4163334444)</span>");
                                 jQuery(".btn-primary").prop("disabled", true);
                                 jQuery("input[value=\'Save Changes\']").prop("disabled", true);
                             }
@@ -127,7 +127,7 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
                   if(jQuery.inArray(this.name,emailArray) >= 0)
                   {
                       var emailVal = "";
-                      jQuery("input[name=\'"+this.name+"\']").keyup(function(){
+                      jQuery("input[name=\'"+this.name+"\']").blur(function(){
                             var divIdEmail = this.name.replace("contactdetails[","").replace("]","").replace("[","").replace("]","");
                             var emailVal = this.value;
                             if(!emailVal.match(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/))
@@ -145,6 +145,39 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
                                 jQuery("#msg"+divIdEmail).html("");
                                 jQuery(".btn-primary").prop("disabled", false);
                                 jQuery("input[value=\'Save Changes\']").prop("disabled", false);
+                            }
+                      })
+                     
+                  }
+                
+            });
+            
+        ';
+        
+        $script.='
+            var faxArray = ["contactdetails[Registrant][Fax]","contactdetails[Billing][Fax]","contactdetails[Admin][Fax]","contactdetails[Tech][Fax]"];
+            jQuery("input[name^=\'contactdetails\']").each(function(e){    
+                  if(jQuery.inArray(this.name,faxArray) >= 0)
+                  {
+                      var faxVal = "";
+                      jQuery("input[name=\'"+this.name+"\']").blur(function(){
+                            var divIdFax = this.name.replace("contactdetails[","").replace("]","").replace("[","").replace("]","");
+                            var faxVal = this.value;
+                            if(!faxVal.match(/^(\+?[0-9]{1,3})\.[0-9]+x?[0-9]*$/))
+                            {
+                                if(!jQuery("#msg"+divIdFax).length)
+                                {
+                                    jQuery("input[name=\'"+this.name+"\']").after("<div id=\'msg"+divIdFax+"\'></div>");
+                                }
+                                jQuery("#msg"+divIdFax).html("<span style=\'color:#DF0101\'>Invalid Fax Format (ex. +1.4163334444 or 1.4163334444)</span>");
+                                jQuery(".btn-primary").prop("disabled", true);
+                                jQuery("input[value=\'Save Changes\']").prop("disabled", true)
+                            }
+                            else
+                            {
+                                jQuery("#msg"+divIdFax).html("");
+                                jQuery(".btn-primary").prop("disabled", false);
+                                jQuery("input[value=\'Save Changes\']").prop("disabled", false)
                             }
                       })
                      
