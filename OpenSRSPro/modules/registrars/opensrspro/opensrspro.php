@@ -2940,16 +2940,24 @@ function opensrspro_AdminDomainsTabFields($params){
         return;
         
     /* Added by BC : NG : 9-7-2014 : To set role perimission for hide Registrant Verification Status */
-    $command = 'getadmindetails';
+    $command   = 'getadmindetails';
     $adminuser = '';
-    $values = '';
-        
-    $results = localAPI($command,$values,$adminuser);
-    
-    $params = array_merge($params,getConfigurationParamsData());
-    $adminIds = explode(',',$params['RestrictedAdminIds']);                                         
+    $values    = '';
      
-    if($results['result'] == 'success' and in_array($results['adminid'],$adminIds)) {return;}    
+    $results   = localAPI($command,$values,$adminuser);
+    
+    /* Added by BC : NG : 21-8-2014 : To set role perimission for hide Registrant Verification Status (Using Role Permission) */
+    $admin_details = mysql_fetch_assoc(mysql_query("SELECT `roleid` FROM tbladmins WHERE id='".mysql_real_escape_string($results['adminid'])."'"));
+    $query         = mysql_query("SELECT `permid` FROM tbladminperms WHERE `roleid`='".$admin_details['roleid']."'");
+    $row           = mysql_num_rows($query);
+    $permId        = array();
+    if($row > 0){
+        while($res=mysql_fetch_array($query)){
+            array_push($permId,$res['permid']);
+        }
+    }
+       
+    if($results['result'] == 'success' and !in_array(999,$permId)) {return;}
     /* End : To set role perimission for hide Registrant Verification Status */
     
     global $osrsError;
@@ -3007,16 +3015,24 @@ function opensrspro_AdminCustomButtonArray($params) {
         return;
         
     /* Added by BC : NG : 9-7-2014 : To set role perimission for hide Registrant Verification Status */
-    $command = 'getadmindetails';
+    $command   = 'getadmindetails';
     $adminuser = '';
-    $values = '';
+    $values    = '';
      
-    $results = localAPI($command,$values,$adminuser);
+    $results   = localAPI($command,$values,$adminuser);
     
-    $params = array_merge($params,getConfigurationParamsData());
-    $adminIds = explode(',',$params['RestrictedAdminIds']); 
-     
-    if($results['result'] == 'success' and in_array($results['adminid'],$adminIds)) {return;}
+    /* Added by BC : NG : 21-8-2014 : To set role perimission for hide Registrant Verification Status (Using Role Permission) */
+    $admin_details = mysql_fetch_assoc(mysql_query("SELECT `roleid` FROM tbladmins WHERE id='".mysql_real_escape_string($results['adminid'])."'"));
+    $query         = mysql_query("SELECT `permid` FROM tbladminperms WHERE `roleid`='".$admin_details['roleid']."'");
+    $row           = mysql_num_rows($query);
+    $permId        = array();
+    if($row > 0){
+        while($res=mysql_fetch_array($query)){
+            array_push($permId,$res['permid']);
+        }
+    }
+       
+    if($results['result'] == 'success' and !in_array(999,$permId)) {return;}
     /* End : To set role perimission for hide Registrant Verification Status */
     
     global $registrant_verification_status;
@@ -3051,10 +3067,29 @@ function opensrspro_resendVerificationEmail($params){
     while($row = mysql_fetch_assoc($result)){
         $params[$row['setting']] = decrypt($row['value']);
     } */
-    
-    $params = array_merge($params,getConfigurationParamsData());   
-    
+    $params = array_merge($params,getConfigurationParamsData());    
     /* End : For get comfig data */
+    
+    /* Added by BC : NG : 9-7-2014 : To set role perimission for hide Registrant Verification Status */
+    $command   = 'getadmindetails';
+    $adminuser = '';
+    $values    = '';
+     
+    $results   = localAPI($command,$values,$adminuser);
+    
+    /* Added by BC : NG : 21-8-2014 : To set role perimission for hide Registrant Verification Status (Using Role Permission) */
+    $admin_details = mysql_fetch_assoc(mysql_query("SELECT `roleid` FROM tbladmins WHERE id='".mysql_real_escape_string($results['adminid'])."'"));
+    $query         = mysql_query("SELECT `permid` FROM tbladminperms WHERE `roleid`='".$admin_details['roleid']."'");
+    $row           = mysql_num_rows($query);
+    $permId        = array();
+    if($row > 0){
+        while($res=mysql_fetch_array($query)){
+            array_push($permId,$res['permid']);
+        }
+    }
+       
+    if($results['result'] == 'success' and !in_array(999,$permId)) {return;}
+    /* End : To set role perimission for hide Registrant Verification Status */
     
     $callArray = array(
         'func' => 'sendRegistrantVerificationEmail',
