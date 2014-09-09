@@ -2532,7 +2532,13 @@ function addCCTLDFields($params, $callArray) {
         $callArray["cedinfo"]["id_type"] = $params ['additionalfields'] ['Identity Form'];
         $callArray["cedinfo"]["id_number"] = $params ['additionalfields'] ['Identity Number'];
         $callArray["cedinfo"]["contact_type"] = "owner";
-        $callArray["cedinfo"]["locality_country"] = $callArray["owner"]["country"];
+        /* Changed by BC : NG : 9-9-2014 : To resolve issue of tld .asia registration error  */
+        
+        /*$callArray["cedinfo"]["locality_country"] = $callArray["owner"]["country"];*/
+        $callArray["cedinfo"]["locality_country"] = $callArray["personal"]["country"];
+        
+        /* END : To resolve issue of tld .asia registration error  */
+        
         //        $callArray["cedinfo"]["legal_entity_type"] = $params ['additionalfields'] ['Legal Entity Type'];
         //        $callArray["cedinfo"]["legal_entity_type_info"] = $params ['additionalfields'] ['Other legal entity type'];
         //        $callArray["cedinfo"]["id_type"] = $params ['additionalfields'] ['Identification Form'];
