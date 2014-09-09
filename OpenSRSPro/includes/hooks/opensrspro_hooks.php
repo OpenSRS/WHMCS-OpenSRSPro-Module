@@ -187,8 +187,45 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
             
         ';
         /* End : To Add validations for phone and email to contact forms  */ 
-
     }
+    
+    /* Added by BC : NG : 21-8-2014 : To set role perimission for hide Registrant Verification Status (Using Role Permission) */
+    if($vars['filename']=='configadminroles' && opensrspro_getSetting('DisableTemplatesChanges')!='on'){
+        $command = 'getadmindetails';
+        $adminuser = '';
+        $values = '';
+         
+        $results = localAPI($command,$values,$adminuser);
+        
+        $admin_details = mysql_fetch_assoc(mysql_query("SELECT * FROM tbladmins WHERE id='".mysql_real_escape_string($results['adminid'])."'"));
+        $query = mysql_query("SELECT permid FROM tbladminperms WHERE roleid='".$admin_details['roleid']."'");
+        $row = mysql_num_rows($query);
+        $permId = array();
+        if($row > 0)
+        {
+            while($res=mysql_fetch_array($query))
+            {
+                array_push($permId,$res['permid']);
+            }
+        }
+        if(in_array(999,$permId))
+        {
+            $script.='
+                  
+             var firstTD = jQuery("input[name^=\'adminperms\']:first").parent();
+             firstTD.append("<input id=\'adminperms999\' checked=\'checked\' type=\'checkbox\' name=\'adminperms[999]\'><label for=\'adminperms999\'>Registrant Verification Status</label><br>");
+        ';
+        }
+        else
+        {
+            $script.='
+                  
+             var firstTD = jQuery("input[name^=\'adminperms\']:first").parent();
+             firstTD.append("<input id=\'adminperms999\' type=\'checkbox\' name=\'adminperms[999]\'><label for=\'adminperms999\'>Registrant Verification Status</label><br>");
+        ';
+        }
+    }
+    /* END : To set role perimission for hide Registrant Verification Status (Using Role Permission) */
     $script.="
         });
         //]]>
