@@ -187,6 +187,47 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
             
         ';
         /* End : To Add validations for phone and email to contact forms  */ 
+        
+        /* Added by BC : NG : 11-9-2014 : To Add JS validation at review & checkout page for Domain Registration  */ 
+        $script.='
+            jQuery("input[name=\'domaincontactphonenumber\']").blur(function(){
+                if(!this.value.match(/^(\+?[0-9]{1,3})\.[0-9]+x?[0-9]*$/))
+                {
+                    if(!jQuery("#msgdomaincontactphonenumber").length)
+                    {
+                        jQuery("input[name=\'domaincontactphonenumber\']").after("<div id=\'msgdomaincontactphonenumber\'></div>");
+                    }
+                    jQuery("#msgdomaincontactphonenumber").html("<span style=\'color:#DF0101\'>Invalid Phone Number Format (ex. +1.4163334444 or 1.4163334444)</span>");
+                     jQuery(".ordernow").prop("disabled", true);
+                }
+                else
+                {
+                    jQuery("#msgdomaincontactphonenumber").html("");
+                    jQuery(".ordernow").prop("disabled", false);
+                }
+            })
+        ';
+            
+        $script.='
+            jQuery("input[name=\'domaincontactemail\']").blur(function(){
+                if(!this.value.match(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/))
+                {
+                    if(!jQuery("#msgdomaincontactemail").length)
+                    {
+                        jQuery("input[name=\'domaincontactemail\']").after("<div id=\'msgdomaincontactemail\'></div>");
+                    }
+                    jQuery("#msgdomaincontactemail").html("<span style=\'color:#DF0101\'>Invalid Email Format (ex. johndoe@domain.com)</span>");
+                    jQuery(".ordernow").prop("disabled", true);
+                }
+                else
+                {
+                    jQuery("#msgdomaincontactemail").html("");
+                    jQuery(".ordernow").prop("disabled", false);
+                }
+            })
+        '; 
+        /* END : To Add JS validation at review & checkout page for Domain Registration  */  
+        
     }
     
     /* Added by BC : NG : 21-8-2014 : To set role perimission for hide Registrant Verification Status (Using Role Permission) */
