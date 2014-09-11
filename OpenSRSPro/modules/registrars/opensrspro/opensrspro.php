@@ -523,6 +523,9 @@ function opensrspro_GetDNS($params) {
         }
 
         $mxRecords = $openSRSHandler->resultFullRaw["attributes"]["records"]["MX"];
+        /* Added by BC : NG : 10-9-2014 : To sort domain based on priority which is inputted manually */  
+        usort($mxRecords,'sort_by_priority');
+        /* END : To sort domain based on priority which is inputted manually */
         foreach ($mxRecords as $mxRecord) {
             $hostrecords[] = array(
                 "hostname" => $mxRecord["subdomain"],
@@ -617,6 +620,12 @@ function opensrspro_GetDNS($params) {
     return $hostrecords;
 }
 
+/* Added by BC : NG : 10-9-2014 : To sort domain based on priority which is inputted manually */  
+function sort_by_priority($a, $b) {
+  return $a["priority"] - $b["priority"];
+}
+/* END : To sort domain based on priority which is inputted manually */ 
+
 function opensrspro_SaveDNS($params) {
 
     global $osrsLogError;
@@ -701,7 +710,10 @@ function opensrspro_SaveDNS($params) {
                     $numMX[$dnsValue["hostname"]]++;
                     $mx_hostnames .= $dnsValue["address"] . ",";
                     $mx_subdomains .= $dnsValue["hostname"] . ",";
-                    $mx_priorities .= 10 * $numMX[$dnsValue["hostname"]] . ",";
+                    /* Changed by BC : NG : 10-9-2014 : To set priority which is inputted manually */  
+                    /*$mx_priorities .= 10 * $numMX[$dnsValue["hostname"]] . ",";*/
+                    $mx_priorities .= $dnsValue['priority'] . ",";
+                    /* END : To set priority which is inputted manually */
                     break;
 
                 case "TXT":
