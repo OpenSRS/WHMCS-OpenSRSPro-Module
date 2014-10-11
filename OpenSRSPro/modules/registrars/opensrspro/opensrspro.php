@@ -2588,7 +2588,9 @@ function addCCTLDFields($params, $callArray) {
 
     //.IT
     if ($tld == 'it') {
-        switch ($params['additionalfields'] ['Legal Type']) {
+        /* Changed by BC : NG : 8-10-2014 : To resolve issue for tld .IT domain registration */
+        
+        /*switch ($params['additionalfields'] ['Legal Type']) {
             case "Italian and foreign natural persons":
                 $callArray["data"]["entity_type"] = "1";
                 break;
@@ -2612,7 +2614,36 @@ function addCCTLDFields($params, $callArray) {
                 break;
         }
         //$callArray["data"]["nationality_code"] = $params ['additionalfields']['Nationality Code'];
-        $callArray["data"]["reg_code"] = $params ['additionalfields']['Tax ID'];
+        $callArray["it_registrant_info"]["reg_code"] = $params ['additionalfields']['Tax ID'];*/
+        
+        
+        switch ($params['additionalfields'] ['Legal Type']) {
+            case "Italian and foreign natural persons":
+                $callArray["it_registrant_info"]["entity_type"] = "1";
+                break;
+            case "Companies/one man companies":
+                $callArray["it_registrant_info"]["entity_type"] = "2";
+                break;
+            case "Freelance workers/professionals":
+                $callArray["it_registrant_info"]["entity_type"] = "3";
+                break;
+            case "non-profit organizations":
+                $callArray["it_registrant_info"]["entity_type"] = "4";
+                break;
+            case "public organizations":
+                $callArray["it_registrant_info"]["entity_type"] = "5";
+                break;
+            case "other subjects":
+                $callArray["it_registrant_info"]["entity_type"] = "6";
+                break;
+            case "non natural foreigners":
+                $callArray["it_registrant_info"]["entity_type"] = "7";
+                break;
+        }
+        //$callArray["data"]["nationality_code"] = $params ['additionalfields']['Nationality Code'];
+        $callArray["it_registrant_info"]["reg_code"] = $params ['additionalfields']['Tax ID'];
+        
+        /* End : To resolve issue for tld .IT domain registration */
     }
 
     //.FR
