@@ -3126,6 +3126,24 @@ function opensrspro_AdminCustomButtonArray($params) {
         $buttonarray["Resend Verification Email"] = "resendVerificationEmail";
     }
     
+    /* Added by BC : NG : 8-10-2014 : To display domain notes */
+    $adminDetails = mysql_fetch_assoc(mysql_query("SELECT * FROM tbladmins WHERE id='".mysql_real_escape_string($results['adminid'])."'"));
+    $resQuery = mysql_query("SELECT permid FROM tbladminperms WHERE roleid='".$adminDetails['roleid']."'");
+    $rowData = mysql_num_rows($resQuery);
+    $permIds = array();
+    if($rowData > 0)
+    {
+        while($resData=mysql_fetch_array($resQuery))
+        {
+            array_push($permIds,$resData['permid']);
+        }
+    }
+    if(in_array(9999,$permIds))
+    {
+        $buttonarray["View Domain Notes"] = "";
+    }
+    /* End : To display domain notes */
+    
     return $buttonarray;
 }
 
@@ -3310,5 +3328,85 @@ if(!class_exists('sendRegistrantVerificationEmail')){
 
     }
 }
+
+/* Added by BC : NG : 8-10-2014 : To display domain notes */ 
+
+function opensrspro_viewdomainnotes($params){
+    global $osrsError;
+    global $osrsLogError;
+
+    $domain = $params['sld'].'.'.$params['tld'];
+
+    $params = array_merge($params,getConfigurationParamsData());    
+    
+    $command   = 'getadmindetails';
+    $adminuser = '';
+    $values    = '';
+     
+    $results   = localAPI($command,$values,$adminuser);
+    
+    $callArray = array(
+        'func' => 'viewDomainNotes',
+        'data' => array(
+                'domain' => $domain,
+            ),
+        'connect' => generateConnectData($params)
+    );
+
+    $result = "";
+    
+    $openSRSHandler = processOpenSRS("array", $callArray);
+
+    $result = '<table cellspacing="1" cellpadding="3" width="100%" border="0" class="datatable"><tbody>';
+    $result .= '<th>Notes</th>';
+    $result .= '<th>Date</th>';
+    foreach($openSRSHandler->resultFullRaw['attributes']['notes'] as $notesData)
+    {
+        $result.='<tr>'; 
+        $result.='<td>'.$notesData['note'].'</td>';
+        $result.='<td width=18%>'.$notesData['timestamp'].'</td>' ;
+        $result.='</tr>';
+    }
+    
+    $result.= '</tbody><table>';
+    
+    echo $result;
+    exit;
+}
+
+if(!class_exists('viewDomainNotes')){
+    class viewDomainNotes extends openSRS_base{
+        public function __construct ($formatString, $dataObject) {
+            parent::__construct($dataObject);
+            $this->_dataObject = $dataObject;
+            $this->_process ();
+        }
+        private function _process(){
+            $cmd = array(
+                'protocol' => 'XCP',
+                'action' => 'get_notes',
+                'object' => 'domain',
+                'attributes' => array(
+                    'domain' => $this->_dataObject->data->domain,
+                    'type' => 'domain',
+                )
+            );
+
+            $xmlCMD = $this->_opsHandler->encode($cmd);
+            $XMLresult = $this->send_cmd($xmlCMD);
+            $arrayResult = $this->_opsHandler->decode($XMLresult);
+
+            // Results
+            $this->resultFullRaw = $arrayResult;
+            $this->resultRaw = $arrayResult;
+
+            $this->resultFullFormated = convertArray2Formatted ($this->_formatHolder, $this->resultFullRaw);
+            $this->resultFormated = convertArray2Formatted ($this->_formatHolder, $this->resultRaw);
+        }
+
+    }
+}
+
+/* End  : To display domain notes */ 
 
 ?>

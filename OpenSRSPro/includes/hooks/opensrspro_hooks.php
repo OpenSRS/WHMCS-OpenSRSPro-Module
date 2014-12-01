@@ -43,6 +43,68 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
             jQuery(document).ready(function(){
     ';
     
+    /* Added by BC : NG : 8-10-2014 : To display domain notes */ 
+       if($vars['filename'] == "clientsdomains")
+       {
+            $command = 'getadmindetails';
+            $adminuser = '';
+            $values = '';
+             
+            $resultData = localAPI($command,$values,$adminuser);
+            $adminDetails = mysql_fetch_assoc(mysql_query("SELECT * FROM tbladmins WHERE id='".mysql_real_escape_string($resultData['adminid'])."'"));
+            $resQuery = mysql_query("SELECT permid FROM tbladminperms WHERE roleid='".$adminDetails['roleid']."'");
+            $rowData = mysql_num_rows($resQuery);
+            $permIds = array();
+            if($rowData > 0)
+            {
+                while($resData=mysql_fetch_array($resQuery))
+                {
+                    array_push($permIds,$resData['permid']);
+                }
+            }
+               
+            if(in_array(9999,$permIds))
+            {
+                $script.= "
+                    jQuery('table.form tr:last').append('<div id=\'dialog\' title=\'Domain Notes\' scrolling=\'auto\'></div>');
+                    if(jQuery('input[value=\'View Domain Notes\']'))
+                    {
+                        jQuery('input[value=\'View Domain Notes\']').after('&nbsp;<div id=\'dialogloader\' style=\'display:none\'><img src=\'/whmcs/images/loadingsml.gif\' /></div>')
+                        var tokenurl = jQuery('input[value=\'View Domain Notes\']').attr('onclick').split('&token=');
+                        var rplurl = tokenurl[1].replace(\"'\",'');
+                        var DomainId = jQuery('select[name=\'id\'] option:selected').val();
+                        jQuery('input[value=\'View Domain Notes\']').attr('onclick', '');
+                        jQuery('input[value=\'View Domain Notes\']').click(function(event){
+                            jQuery('#dialogloader').css('display', 'inline'); 
+                            var url = '/whmcs/admin/clientsdomains.php?userid=".$_REQUEST['userid']."&id='+DomainId+'&regaction=custom&ac=viewdomainnotes&token='+rplurl;
+                            jQuery.ajax({url:url,success:function(result){
+                              jQuery('#dialog').html(result);
+                              if(result)
+                              {
+                                jQuery('#dialogloader').css('display', 'none');
+                                jQuery('#dialog').dialog({
+                                    autoOpen: true,
+                                    resizable: false,
+                                    width: 800,
+                                    height: 500,
+                                    modal: true,
+                                    position: 'center', 
+                                    open: function (event, ui) {
+                                      jQuery('#dialog').css('overflow', 'auto'); 
+                                    }
+                                });
+                              }
+                            }});
+                        });
+                    }
+                    
+
+                ";
+            }
+       }
+
+        /* End : To display domain notes */ 
+    
     if(($vars['filename']=='clientarea' || $vars['filename']=='register' || $vars['filename']=='cart' || $vars['filename']=='clientsdomaincontacts' || $vars['filename']=='clientscontacts' || $vars['filename']=='clientsprofile' || $vars['filename']=='clientsadd') && opensrspro_getSetting('DisableTemplatesChanges')!='on'){
         
         /*$pre_script.='
@@ -265,8 +327,28 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
              firstTD.append("<input id=\'adminperms999\' type=\'checkbox\' name=\'adminperms[999]\'><label for=\'adminperms999\'>Registrant Verification Status</label><br>");
         ';
         }
+        /* END : To set role perimission for hide Registrant Verification Status (Using Role Permission) */
+        
+        /* Added by BC : NG : 8-10-2014 : To set role perimission for hide View Domain Notes (Using Role Permission) */
+        if(in_array(9999,$permId))
+        {
+            $script.='
+             var firstTD = jQuery("input[name^=\'adminperms\']:first").parent().next();
+             firstTD.append("<input id=\'adminperms9999\' checked=\'checked\' type=\'checkbox\' name=\'adminperms[9999]\'><label for=\'adminperms9999\'>&nbsp;View Domain Notes</label><br>");
+             ';
+        }
+        else
+        {
+            $script.='
+             var firstTD = jQuery("input[name^=\'adminperms\']:first").parent().next();
+             firstTD.append("<input id=\'adminperms9999\' type=\'checkbox\' name=\'adminperms[9999]\'><label for=\'adminperms9999\'>&nbsp;View Domain Notes</label><br>");
+        ';
+        }
+        
+        /* End : To set role perimission for hide View Domain Notes (Using Role Permission) */
     }
-    /* END : To set role perimission for hide Registrant Verification Status (Using Role Permission) */
+    
+    
     $script.="
         });
         //]]>
