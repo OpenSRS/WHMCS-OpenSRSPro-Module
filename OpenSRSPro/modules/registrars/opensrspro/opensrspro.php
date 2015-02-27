@@ -1404,7 +1404,12 @@ function opensrspro_GetContactDetails($params) {
             $values[$contactValueType]["Address 2"] = $contactSet[$contactType]["address2"];
             $values[$contactValueType]["Address3"] = $contactSet[$contactType]["address3"];
             $values[$contactValueType]["City"] = $contactSet[$contactType]["city"];
-            $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+            /* Changed by BC : NG : 2-5-2015 : To resolve issue for tld .NL  */
+            /*$values[$contactValueType]["State"] = $contactSet[$contactType]["state"];*/
+            if ($tld != "nl") {  
+                $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+            }
+            /* End : To resolve issue for tld .NL  */
             $values[$contactValueType]["Postal Code"] = $contactSet[$contactType]["postal_code"];
             $values[$contactValueType]["Country"] = $contactSet[$contactType]["country"];
             $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
@@ -1413,7 +1418,9 @@ function opensrspro_GetContactDetails($params) {
             
             /* Added by BC : NG : 23-7-2014 : To resolve issue of display all contact details  */ 
             
-            $contactType = "billing";
+            /* Changed by BC : NG : 2-5-2015 : To resolve issue for tld .NL  */
+            
+            /*$contactType = "billing";
             $contactValueType = "Billing";
 
 //                if (strcmp($contactType, "owner") == 0)
@@ -1434,7 +1441,40 @@ function opensrspro_GetContactDetails($params) {
             $values[$contactValueType]["Country"] = $contactSet[$contactType]["country"];
             $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
             $values[$contactValueType]["Phone"] = $contactSet[$contactType]["phone"];
-            $values[$contactValueType]["Fax"] = $contactSet[$contactType]["fax"];
+            $values[$contactValueType]["Fax"] = $contactSet[$contactType]["fax"]; */
+            
+            if ($tld != "nl") {   
+                $contactType = "billing";
+                $contactValueType = "Billing";
+
+                   /* if (strcmp($contactType, "owner") == 0)
+                        $contactValueType = "Registrant";
+                        //$contactValueType = "Owner";
+                     else
+                        $contactValueType = ucfirst($contactType);   */
+
+                $values[$contactValueType]["First Name"] = $contactSet[$contactType]["first_name"];
+                $values[$contactValueType]["Last Name"] = $contactSet[$contactType]["last_name"];
+                $values[$contactValueType]["Organization Name"] = $contactSet[$contactType]["org_name"];
+                $values[$contactValueType]["Address 1"] = $contactSet[$contactType]["address1"];
+                $values[$contactValueType]["Address 2"] = $contactSet[$contactType]["address2"];
+                $values[$contactValueType]["Address3"] = $contactSet[$contactType]["address3"];
+                $values[$contactValueType]["City"] = $contactSet[$contactType]["city"]; 
+                /* Changed by BC : NG : 2-5-2015 : To resolve issue for tld .NL  */
+                /*$values[$contactValueType]["State"] = $contactSet[$contactType]["state"];*/
+                if($tld != "nl")
+                {
+                    $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+                }
+                /* End : To resolve issue for tld .NL  */
+                $values[$contactValueType]["Postal Code"] = $contactSet[$contactType]["postal_code"];
+                $values[$contactValueType]["Country"] = $contactSet[$contactType]["country"];
+                $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
+                $values[$contactValueType]["Phone"] = $contactSet[$contactType]["phone"];
+                $values[$contactValueType]["Fax"] = $contactSet[$contactType]["fax"];  
+            }
+            
+            /* End : To resolve issue for tld .NL  */
             
             $contactType = "admin";
             $contactValueType = "Admin";
@@ -1452,7 +1492,13 @@ function opensrspro_GetContactDetails($params) {
             $values[$contactValueType]["Address 2"] = $contactSet[$contactType]["address2"];
             $values[$contactValueType]["Address3"] = $contactSet[$contactType]["address3"];
             $values[$contactValueType]["City"] = $contactSet[$contactType]["city"];
-            $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+            /* Changed by BC : NG : 2-5-2015 : To resolve issue for tld .NL  */
+            /*$values[$contactValueType]["State"] = $contactSet[$contactType]["state"];*/
+            if($tld != "nl")
+            {
+                $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+            }
+            /* End : To resolve issue for tld .NL  */
             $values[$contactValueType]["Postal Code"] = $contactSet[$contactType]["postal_code"];
             $values[$contactValueType]["Country"] = $contactSet[$contactType]["country"];
             $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
@@ -1477,7 +1523,13 @@ function opensrspro_GetContactDetails($params) {
                 $values[$contactValueType]["Address 2"] = $contactSet[$contactType]["address2"];
                 $values[$contactValueType]["Address3"] = $contactSet[$contactType]["address3"];
                 $values[$contactValueType]["City"] = $contactSet[$contactType]["city"];
-                $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+                /* Changed by BC : NG : 2-5-2015 : To resolve issue for tld .NL  */
+                /*$values[$contactValueType]["State"] = $contactSet[$contactType]["state"];*/
+                if($tld != "nl")
+                {
+                    $values[$contactValueType]["State"] = $contactSet[$contactType]["state"];
+                }
+                /* End : To resolve issue for tld .NL  */
                 $values[$contactValueType]["Postal Code"] = $contactSet[$contactType]["postal_code"];
                 $values[$contactValueType]["Country"] = $contactSet[$contactType]["country"];
                 $values[$contactValueType]["Email"] = $contactSet[$contactType]["email"];
@@ -1545,6 +1597,12 @@ function opensrspro_SaveContactDetails($params) {
     else
         $contactTypes = array("owner", "admin", "tech", "billing");
 
+    /* Added by BC : NG : 2-5-2015 : To resolve issue for tld .NL  */
+    if ($tld == "nl") {
+          $contactTypes = array("owner", "admin", "tech");
+    }
+    /* End : To resolve issue for tld .NL  */
+    
     $contactTypesStr = implode(",", $contactTypes);
 
     if (!$cookieBypass) {
@@ -2499,7 +2557,15 @@ function addCCTLDFields($params, $callArray) {
         $callArray["admin"]["lang"] = $lang;
         $callArray["billing"]["lang"] = $lang;
         $callArray["data"]["lang"] = $lang;
-        $callArray["data"]["country"] = $callArray["owner"]["country"];
+        /* Changed by BC : NG : 11-2-2015 : To resolve issue for tld .EU domain registration */
+        if($tld == 'eu'){
+            $callArray["data"]["eu_country"] = $callArray["personal"]["country"];
+        }
+        else
+        {
+            $callArray["data"]["country"] = $callArray["owner"]["country"];                      
+        }
+        /* End : To resolve issue for tld .EU domain registration */
     }
 
     //.PRO
@@ -2522,7 +2588,20 @@ function addCCTLDFields($params, $callArray) {
 
     // Pushes in owner confirm address for eu, be and de transfers
     if ($tld == "eu" || $tld == "be" || $tld == "de" || $tld == "it") {
-        $callArray["data"]["owner_confirm_address"] = $callArray["owner"]["email"];
+        /* Changed by BC : NG : 21-11-2014 : To resolve issue for tld .DE domain registration */
+        //$callArray["data"]["owner_confirm_address"] = $callArray["owner"]["email"];
+        /* Changed by BC : NG : 11-2-2015 : To resolve issue for tld .EU domain registration */
+        /*if($tld == "de")*/        
+        if($tld == "de" || $tld == "eu")
+        /* End : To resolve issue for tld .EU domain registration */
+        {
+            $callArray["data"]["owner_confirm_address"] = $callArray["personal"]["email"];
+        }
+        else
+        {
+            $callArray["data"]["owner_confirm_address"] = $callArray["owner"]["email"];
+        }
+        /* End : To resolve issue for tld .DE domain registration */
     }
 
     // Pushes Nexus information into call
