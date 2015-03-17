@@ -2499,7 +2499,15 @@ function addCCTLDFields($params, $callArray) {
         $callArray["admin"]["lang"] = $lang;
         $callArray["billing"]["lang"] = $lang;
         $callArray["data"]["lang"] = $lang;
-        $callArray["data"]["country"] = $callArray["owner"]["country"];
+       /* Changed by BC : NG : 11-2-2015 : To resolve issue for tld .EU domain registration */
+        if($tld == 'eu'){
+            $callArray["data"]["eu_country"] = $callArray["personal"]["country"];
+        }
+        else
+        {
+            $callArray["data"]["country"] = $callArray["owner"]["country"];                      
+        }
+        /* End : To resolve issue for tld .EU domain registration */
     }
 
     //.PRO
@@ -2521,8 +2529,19 @@ function addCCTLDFields($params, $callArray) {
     }
 
     // Pushes in owner confirm address for eu, be and de transfers
-    if ($tld == "eu" || $tld == "be" || $tld == "de" || $tld == "it") {
-        $callArray["data"]["owner_confirm_address"] = $callArray["owner"]["email"];
+    if ($tld == "eu" || $tld == "be" || $tld == "de" || $tld == "it") {    
+        /* Changed by BC : NG : 11-2-2015 : To resolve issue for tld .EU domain registration */
+        //$callArray["data"]["owner_confirm_address"] = $callArray["owner"]["email"]; 
+        if($tld == "eu")
+        {
+            $callArray["data"]["owner_confirm_address"] = $callArray["personal"]["email"];
+        }
+        else
+        {
+            $callArray["data"]["owner_confirm_address"] = $callArray["owner"]["email"];
+        }
+        /* End : To resolve issue for tld .EU domain registration */
+        
     }
 
     // Pushes Nexus information into call
