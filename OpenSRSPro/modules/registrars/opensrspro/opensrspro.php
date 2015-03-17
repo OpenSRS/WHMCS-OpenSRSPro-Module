@@ -2587,10 +2587,13 @@ function addCCTLDFields($params, $callArray) {
     }
 
     // Pushes in owner confirm address for eu, be and de transfers
-    if ($tld == "eu" || $tld == "be" || $tld == "de" || $tld == "it") {    
+    if ($tld == "eu" || $tld == "be" || $tld == "de" || $tld == "it") {  
+        /* Changed by BC : NG : 21-2-2014 : To resolve issue for tld .DE domain registration */  
         /* Changed by BC : NG : 11-2-2015 : To resolve issue for tld .EU domain registration */
         //$callArray["data"]["owner_confirm_address"] = $callArray["owner"]["email"]; 
-        if($tld == "eu")
+        //if($tld == "eu")
+        if($tld == "de" || $tld == "eu")
+        /* End : To resolve issue for tld .DE domain registration */ 
         {
             $callArray["data"]["owner_confirm_address"] = $callArray["personal"]["email"];
         }
