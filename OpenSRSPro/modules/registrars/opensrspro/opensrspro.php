@@ -1074,7 +1074,17 @@ function opensrspro_RegisterDomain($params) {
     $callArray[$contactType]["postal_code"] = $contactSet[$contactValueType . "postcode"];
     $callArray[$contactType]["country"] = $contactSet[$contactValueType . "country"];
     $callArray[$contactType]["email"] = $contactSet[$contactValueType . "email"];
-    $callArray[$contactType]["phone"] = $contactSet[$contactValueType . "fullphonenumber"];
+    /* Changed by BC : NG : 26-2-2015 : To resolve issue for tld .CA domain registration */
+    //$callArray[$contactType]["phone"] = $contactSet[$contactValueType . "fullphonenumber"];
+    if($tld == 'ca')
+    {
+        $callArray[$contactType]["phone"] = $contactSet[$contactValueType . "phonenumber"];
+    }
+    else
+    {
+        $callArray[$contactType]["phone"] = $contactSet[$contactValueType . "fullphonenumber"];
+    }
+    /* END : To resolve issue for tld .CA domain registration */
     $callArray[$contactType]["fax"] = $contactSet[$contactValueType . "fax"];
     $callArray[$contactType]["lang_pref"] = "EN";
 
