@@ -2496,8 +2496,10 @@ function getExpirationYear($domain, $params) {
 
 // Generates the connection data needed to send an OSRS call
 function generateConnectData($params) {
-
-    if (strcmp($params["TestMode"], "on") == 0) {
+    /* Changed by BC : NG : 4-4-2015 : To resolve issue of test connection */
+    /*if (strcmp($params["TestMode"], "on") == 0)*/
+    if (strcmp($params["TestMode"], "on") == 0 || $params["TestMode"] == 1) {
+    /* End : To resolve issue of test connection */
         $connectData["osrs_username"] = $params["TestUsername"];
         $connectData["osrs_password"] = "placeholder";
         $connectData["osrs_key"] = $params["TestAPIKey"];
