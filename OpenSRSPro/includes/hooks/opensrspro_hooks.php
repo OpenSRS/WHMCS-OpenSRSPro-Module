@@ -115,7 +115,7 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
             {
                 $script.= "
                     jQuery('table.form tr:last').append('<div id=\'dialog\' title=\'Domain Notes\' scrolling=\'auto\'></div>');
-                    if(jQuery('input[value=\'View Domain Notes\']'))
+                    if(jQuery('input[value=\'View Domain Notes\']').val())
                     {
                         jQuery('input[value=\'View Domain Notes\']').after('&nbsp;<div id=\'dialogloader\' style=\'display:none\'><img src=\'/whmcs/images/loadingsml.gif\' /></div>')
                         var tokenurl = jQuery('input[value=\'View Domain Notes\']').attr('onclick').split('&token=');
@@ -124,7 +124,7 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
                         jQuery('input[value=\'View Domain Notes\']').attr('onclick', '');
                         jQuery('input[value=\'View Domain Notes\']').click(function(event){
                             jQuery('#dialogloader').css('display', 'inline'); 
-                            var url = '/whmcs/admin/clientsdomains.php?userid=".$_REQUEST['userid']."&id='+DomainId+'&regaction=custom&ac=viewdomainnotes&token='+rplurl;
+                            var url = '?userid=".$_REQUEST['userid']."&id='+DomainId+'&regaction=custom&ac=viewdomainnotes&token='+rplurl;
                             jQuery.ajax({url:url,success:function(result){
                               jQuery('#dialog').html(result);
                               if(result)
