@@ -37,7 +37,55 @@ function opensrspro_getSetting($setting){
 function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
     
     $pre_script='';
-    $script='
+    $script = '';    
+    /* Tld AU start */     
+    if($vars['filename'] == "ordersadd" || $vars['filename'] == "clientsdomains")
+    {
+            $script.='
+            <script type="text/javascript">
+            //<![CDATA[
+             var all_prerequisites_exist = 0;
+                       var js_e_type_ids = {"Trademark Owner":[{"value":"TM","name":"Trademark"}],"Registered Business":[{"value":"OTHER","name":"Australian Registered Body Number"}],"Partnership":[{"value":"ABN","name":"Australian Business Number"}],"Sole Trader":[{"value":"ABN","name":"Australian Business Number"}],"Pending TM Owner":[{"value":"TM","name":"Trademark"}],"Company":[{"value":"ACN","name":"Australian Company Number"}],"Trade Union":[{"value":"OTHER","name":"Organisation Number"}],"Charity":[{"value":"ABN","name":"Australian Business Number"}],"Incorporated Association":[{"value":"ACT BN","name":"Australian Capital Territory Business Number"},{"value":"NSW BN","name":"New South Wales Business Number"},{"value":"NT BN","name":"Northern Territory Business Number"},{"value":"QLD BN","name":"Queensland Business Number"},{"value":"SA BN","name":"South Australia Business Number"},{"value":"TAS BN","name":"Tasmania Business Number"},{"value":"VIC BN","name":"Victoria Business Number"},{"value":"WA BN","name":"Western Australia Business Number"}],"Club":[{"value":"ABN","name":"Australian Business Number"}],"Non-profit Organisation":[{"value":"ABN","name":"Australian Business Number"},{"value":"ACT BN","name":"Australian Capital Territory Business Number"},{"value":"ACN","name":"Australian Company Number"},{"value":"OTHER","name":"Australian Registered Body Number"},{"value":"NSW BN","name":"New South Wales Business Number"},{"value":"NT BN","name":"Northern Territory Business Number"},{"value":"QLD BN","name":"Queensland Business Number"},{"value":"SA BN","name":"South Australia Business Number"},{"value":"TAS BN","name":"Tasmania Business Number"},{"value":"VIC BN","name":"Victoria Business Number"},{"value":"WA BN","name":"Western Australia Business Number"}],"Citizen/Resident":[{"value":"ABN","name":"Australian Business Number"},{"value":"ACN","name":"Australian Company Number"},{"value":"ACT BN","name":"Australian Capital Territory Business Number"},{"value":"NSW BN","name":"New South Wales Business Number"},{"value":"OTHER","name":"Other"},{"value":"NT BN","name":"Northern Territory Business Number"},{"value":"QLD BN","name":"Queensland Business Number"},{"value":"SA BN","name":"South Australia Business Number"},{"value":"TAS BN","name":"Tasmania Business Number"},{"value":"TM","name":"Trademark"},{"value":"VIC BN","name":"Victoria Business Number"},{"value":"WA BN","name":"Western Australia Business Number"}]};
+                       
+                        function prerequisites_exist() {
+                            // Defensive.. test all ids exist before we enable the functionality
+                            var ids = [ \'id_au_eligibility_type\', \'id_au_eligibility_id_type\' ];
+                            for (var i = 0; i < ids.length; ++i ) {
+         
+                            if ( ! $(\'#"+ids[i]\') )  {
+                                return false;
+                            }
+                            }
+                            all_prerequisites_exist = 1;
+                            return true;
+                        }
+                        function on_change_entity_type(entity_type) { 
+                            if ( ( ! all_prerequisites_exist ) || entity_type == undefined || ! js_e_type_ids[entity_type] ) {
+                                return false;
+                            }
+                            
+                            var select_e_id_type = $("#id_au_eligibility_id_type");
+                            select_e_id_type.empty();
+            
+                            for (var i = 0; i < js_e_type_ids[entity_type].length; i++) {
+                                var o = document.createElement("option");
+                                o.value = js_e_type_ids[entity_type][i].value;
+                                o.text =  js_e_type_ids[entity_type][i].name;
+                                select_e_id_type.append(o);
+                            }
+                            return false;
+                        }
+                        function update_ui_on_load(){ 
+                            if ( ! prerequisites_exist() ) { return false; }
+                            on_change_entity_type( $("#id_au_eligibility_type").val());
+                        }
+                        
+                         //]]>
+                </script>"
+                        ';   
+    }
+    /* Tld AU End */
+    $script.='
         <script type="text/javascript">
         //<![CDATA[
             jQuery(document).ready(function(){
@@ -103,7 +151,161 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
             }
        }
 
-        /* End : To display domain notes */ 
+        /* End : To display domain notes */
+        
+        /* Tld AU start */     
+        if($vars['filename'] == "ordersadd" || $vars['filename'] == "clientsdomains")
+        {
+            if($vars['filename'] == "ordersadd")
+            {
+               $script.='var orderFlag = 1'; 
+            }
+            else
+            {
+                if($_REQUEST['domainid'])
+                {
+                    $domainId = $_REQUEST['domainid'];
+                }
+                else
+                {
+                     $domainId = $_REQUEST['id'];
+                }
+                $resQuery = mysql_query("SELECT name,value FROM tbldomainsadditionalfields WHERE domainid='".$domainId."' AND name = 'Eligibility ID Type'");
+                $rowData = mysql_fetch_assoc($resQuery);
+                if($rowData > 0)
+                {   
+                  $eligibilityIDType = $rowData['value'];
+                }
+                $resQuery1 = mysql_query("SELECT name,value FROM tbldomainsadditionalfields WHERE domainid='".$domainId."' AND name = 'Eligibility Type'");
+                $rowData1 = mysql_fetch_assoc($resQuery1);
+                if($rowData1 > 0)
+                {  
+                  $eligibilityType = $rowData1['value'];
+                }
+                  $script.='var orderFlag = 0'; 
+            }
+            $script.='
+            
+            function autldfield()
+            {   
+                $(".fieldlabel").each(function(e){
+                    if(this.innerHTML == "Eligibility Type")
+                    {
+                       if(orderFlag == 1)
+                       {
+                            var domain = $("#regdomain0").val();
+                       }
+                       else
+                       {
+                            var domain = $("input:text[name=domain]").val()
+                       }
+                       var domainArr = domain.split(".");
+                       var domainTld = domainArr.splice(-2,2)
+                       var tld = domainTld[0] + "." + domainTld[1]; 
+                       if(tld == "com.au" || tld == "net.au")
+                       {      
+                           $("select[name=\'domainfield[0][5]\']").attr({id: "id_au_eligibility_id_type"});
+                           $("select[name=\'domainfield[0][6]\']").attr({id: "id_au_eligibility_type", onchange : "return on_change_entity_type(this.value)"}); 
+                           $("select[name=\'domainfield[5]\']").attr({id: "id_au_eligibility_id_type"});
+                           $("select[name=\'domainfield[6]\']").attr({id: "id_au_eligibility_type", onchange : "return on_change_entity_type(this.value)"});
+                             
+                           var newOptions = {"Company": "Company",  "Partnership": "Partnership",  "Pending TM Owner": "Pending TM Owner", "Registered Business" : "Registered Business", "Sole Trader" : "Sole Trader",  "Trademark Owner" : "Trademark Owner"};
+
+                           var $el = $("#id_au_eligibility_type");
+                           $el.empty();
+                           $.each(newOptions, function(value,key) {
+                           $el.append($("<option></option>")
+                             .attr("value", value).text(key));
+                           });  
+                           if(orderFlag == 0)
+                           {
+                             $el.val("'.$eligibilityType.'"); 
+                           }
+                           update_ui_on_load();
+                           if(orderFlag == 0)
+                           {
+                             $("#id_au_eligibility_id_type").val("'.$eligibilityIDType.'");
+                           }
+
+                       }
+                       if(tld == "org.au" || tld == "asn.au")
+                       {      
+                           $("select[name=\'domainfield[0][5]\']").attr({id: "id_au_eligibility_id_type"});
+                           $("select[name=\'domainfield[0][6]\']").attr({id: "id_au_eligibility_type", onchange : "return on_change_entity_type(this.value)"}); 
+                           $("select[name=\'domainfield[5]\']").attr({id: "id_au_eligibility_id_type"});
+                           $("select[name=\'domainfield[6]\']").attr({id: "id_au_eligibility_type", onchange : "return on_change_entity_type(this.value)"}); 
+                           var newOptions2 = {"Charity": "Charity",  "Club": "Club",  "Incorporated Association": "Incorporated Association", "Non-profit Organisation" : "Non-profit Organisation", "Trade Union" : "Trade Union"};
+
+                           var $el = $("#id_au_eligibility_type");
+                           $el.empty();
+                           $.each(newOptions2, function(value,key) {
+                           $el.append($("<option></option>")
+                             .attr("value", value).text(key));
+                           });
+                           if(orderFlag == 0)
+                           {
+                             $el.val("'.$eligibilityType.'"); 
+                           }
+                           update_ui_on_load();
+                           if(orderFlag == 0)
+                           {
+                             $("#id_au_eligibility_id_type").val("'.$eligibilityIDType.'");
+                           }
+                           
+                       }
+                       if(tld == "id.au")
+                       {      
+                           $("select[name=\'domainfield[0][5]\']").attr({id: "id_au_eligibility_id_type"});
+                           $("select[name=\'domainfield[0][6]\']").attr({id: "id_au_eligibility_type", onchange : "return on_change_entity_type(this.value)"}); 
+                           $("select[name=\'domainfield[5]\']").attr({id: "id_au_eligibility_id_type"});
+                           $("select[name=\'domainfield[6]\']").attr({id: "id_au_eligibility_type", onchange : "return on_change_entity_type(this.value)"});
+                           
+                           var newOptions3 = {"Citizen/Resident" : "Citizen/Resident"};
+                           var $el = $("#id_au_eligibility_type");
+                           $el.empty();
+                           $.each(newOptions3, function(value,key) {
+                           $el.append($("<option></option>")
+                             .attr("value", value).text(key));
+                           });
+                           if(orderFlag == 0)
+                           {
+                             $el.val("'.$eligibilityType.'");
+                           }
+                           update_ui_on_load();
+                           if(orderFlag == 0)
+                           {
+                             $("#id_au_eligibility_id_type").val("'.$eligibilityIDType.'");
+                           }
+                       }
+                    }
+                });
+            }
+            
+            
+            $("#domain0").blur(function(ele){
+                autldfield();
+            });
+            
+            $("#regdomain0").blur(function(ele){
+                autldfield();
+            });
+            
+             $("#domreg0").click(function(ele){
+                    setTimeout(function() {
+                          autldfield();
+                    }, 1000);
+            });
+            
+            ';
+            
+            if($vars['filename'] == "clientsdomains")
+            {
+                $script.='autldfield();';
+            }
+            
+            
+        }
+        /* Tld AU End */  
     
     if(($vars['filename']=='clientarea' || $vars['filename']=='register' || $vars['filename']=='cart' || $vars['filename']=='clientsdomaincontacts' || $vars['filename']=='clientscontacts' || $vars['filename']=='clientsprofile' || $vars['filename']=='clientsadd') && opensrspro_getSetting('DisableTemplatesChanges')!='on'){
         
