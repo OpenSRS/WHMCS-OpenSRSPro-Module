@@ -3173,11 +3173,10 @@ function opensrspro_AdminDomainsTabFields($params){
     
 }
 
-function opensrspro_AdminCustomButtonArray($params) {
-    
+function opensrspro_AdminCustomButtonArray($params) {        
     $domain = $params['sld'].'.'.$params['tld'];
     $domain_details = mysql_fetch_assoc(mysql_query("SELECT * FROM tbldomains WHERE id='".mysql_real_escape_string($params['domainid'])."'"));
-
+    
     if($domain_details['status'] != 'Active')
         return;
         
@@ -3185,6 +3184,10 @@ function opensrspro_AdminCustomButtonArray($params) {
     $command   = 'getadmindetails';
     $adminuser = '';
     $values    = '';
+    
+    global $registrant_verification_status;
+    global $view_domain_notes;
+    $buttonarray = array();     
      
     $results   = localAPI($command,$values,$adminuser);
     
@@ -3198,44 +3201,27 @@ function opensrspro_AdminCustomButtonArray($params) {
             array_push($permId,$res['permid']);
         }
     }
-       
-    if($results['result'] == 'success' and !in_array(999,$permId)) {return;}
-    /* End : To set role perimission for hide Registrant Verification Status */
-    
-    global $registrant_verification_status;
-    
-    if(isset($registrant_verification_status[$domain])){
-        $status = $registrant_verification_status[$domain];
+      
+    /* Changed by BC : DD : 06-07-2015 : To set permissions for View Domain Notes and Registrant Verification Status*/   
+    if($results['result'] == 'success' and !in_array(999,$permId) and !in_array(9999,$permId)) {    
+        return;
     }
-    else{
-        $status = opensrspro_getRegistrantVerificationStatus($params);
-        $registrant_verification_status[$domain] = $status;
-    }
-
-    $buttonarray = array();
-    
-    if($status['registrant_verification_status']=='verifying'){
+    if($results['result'] == 'success' and in_array(999,$permId)){
+         if(isset($registrant_verification_status[$domain])){
+            $status = $registrant_verification_status[$domain];
+        }
+        else{
+            $status = opensrspro_getRegistrantVerificationStatus($params);
+            $registrant_verification_status[$domain] = $status;
+        } 
+        if($status['registrant_verification_status']=='verifying'){
         $buttonarray["Resend Verification Email"] = "resendVerificationEmail";
-    }
-    
-    /* Added by BC : NG : 8-10-2014 : To display domain notes */
-    $adminDetails = mysql_fetch_assoc(mysql_query("SELECT * FROM tbladmins WHERE id='".mysql_real_escape_string($results['adminid'])."'"));
-    $resQuery = mysql_query("SELECT permid FROM tbladminperms WHERE roleid='".$adminDetails['roleid']."'");
-    $rowData = mysql_num_rows($resQuery);
-    $permIds = array();
-    if($rowData > 0)
-    {
-        while($resData=mysql_fetch_array($resQuery))
-        {
-            array_push($permIds,$resData['permid']);
         }
     }
-    if(in_array(9999,$permIds))
-    {
+    if(in_array(9999,$permId)){
         $buttonarray["View Domain Notes"] = "";
     }
-    /* End : To display domain notes */
-    
+    /* END */
     return $buttonarray;
 }
 
