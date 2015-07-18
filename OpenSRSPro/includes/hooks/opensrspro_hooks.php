@@ -149,6 +149,19 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
 
                 ";
             }
+            
+              /* Added by BC : dd : 16-07-2014 :  Disallow Registrar permissions (Using Role Permission) */
+            if(in_array(8888,$permIds))
+            {
+                $script.= "
+                  jQuery('input[value=\'Register\']').attr('disabled','disabled');
+                  jQuery('input[value=\'Register\']').addClass('btn disabled');
+                  
+                  jQuery('input[value=\'Renew\']').attr('disabled','disabled');
+                  jQuery('input[value=\'Renew\']').addClass('btn disabled');
+                ";
+            }
+            /* END */
        }
 
         /* End : To display domain notes */
@@ -548,6 +561,22 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
         }
         
         /* End : To set role perimission for hide View Domain Notes (Using Role Permission) */
+        /* Added by BC : dd : 16-07-2014 :  Disallow Registrar permissions (Using Role Permission) */
+       if(in_array(8888,$permId))
+        {
+            $script.='
+             var firstTD = jQuery("input[name^=\'adminperms\']:first").parent().next().next();
+             firstTD.append("<input id=\'adminperms8888\' checked=\'checked\' type=\'checkbox\' name=\'adminperms[8888]\'><label for=\'adminperms8888\'>&nbsp;Disallow Registrar Operations</label><br>");
+             ';
+        }
+        else
+        {
+            $script.='
+             var firstTD = jQuery("input[name^=\'adminperms\']:first").parent().next().next();
+             firstTD.append("<input id=\'adminperms8888\' type=\'checkbox\' name=\'adminperms[8888]\'><label for=\'adminperms8888\'>&nbsp;Disallow Registrar Operations</label><br>");
+        ';
+        }     
+        /* END*/
     }
     
     
