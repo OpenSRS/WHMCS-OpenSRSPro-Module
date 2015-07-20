@@ -81,7 +81,12 @@ function hook_opensrspro_ActivateTemplatesChangesHeadOutput($vars){
                         }
                         
                          //]]>
-                </script>"
+            // Chnaged by BC : To resolved issue of WHMCS Logo Overlaps Links on Domains Tab
+                
+                //</script>"
+                </script>
+            
+            // End : To resolved issue of WHMCS Logo Overlaps Links on Domains Tab
                         ';   
     }
     /* Tld AU End */
